@@ -9,7 +9,22 @@ dotenv.config({
   path: './env'
 })
 
-connectDB();
+connectDB()
+// when the db is connected it will give the promise , bcz we use async fun
+.then(()=>{
+  // before listening to db , we can write code for error 
+  app.on("error" , (error) =>{
+    console.log("ERRR:" ,error );
+    throw error
+  })
+  app.listen(process.env.PORT || 8000 , () =>{
+    console.log(`Server is running at port : ${process.env.PORT}`);
+    
+  })
+})
+.catch((err) =>{
+  console.log("MONGO db connection failed !!! " , err);
+})
 
  /* THE FIRST APPROACH TO ADD DATABASE  */
 

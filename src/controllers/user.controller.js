@@ -8,6 +8,7 @@ const registerUser = asyncHandler( async(req , res ) =>{
   // res.status(200).json({
   //   message : "ok"
   // })
+
 /* 
     1. get user details from frontend
     2. validation - not empty 
@@ -22,7 +23,7 @@ const registerUser = asyncHandler( async(req , res ) =>{
 */
     const { fullName , email , username , password } = req.body 
   
-    console.log("email :" , email);  // USE OF POSTMAN
+   // console.log("email :" , email);  // USE OF POSTMAN
    //console.log("password :" , password);
 
     // checking for required fields available or not 
@@ -53,6 +54,7 @@ const registerUser = asyncHandler( async(req , res ) =>{
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
     
     //console.log(req.files)
+    //New approach to find the cover image is available in localpath or not 
     let coverImageLocalPath;
     if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
       coverImageLocalPath = req.files.coverImage[0].path

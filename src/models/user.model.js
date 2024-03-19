@@ -69,7 +69,10 @@ userSchema.methods.isPassword = async function(password){
   return await bcrypt.compare(password,this.password)
 }
 
+
 // jwt is bearer token . it is like  a key.
+// jwt is bared token . it means a key of the 
+
 
 userSchema.methods.generateAccessToken = function(){
   return jwt.sign(

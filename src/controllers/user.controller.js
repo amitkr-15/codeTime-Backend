@@ -4,6 +4,25 @@ import {User} from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
+const generateAccessAndRefreshToken = async(userId)=>{
+  try {
+    const user = await User.findById(userId)
+    const accessToken = user.generateAccessToken()
+    const refreshToken = user.generateRefreshToken()
+
+    user.refreshToken = refreshToken
+
+    //  SAVING THE TOKEN IN THE DB 
+    // VALIDATEBEFORESAVE IS USED TO NOT SEND THE PASSWORD I THINK 
+
+    await user.save({validateBeforeSave : false})
+    return {accessToken , refreshToken}
+
+  } catch (error) {
+    throw new ApiError(500, "something went wrong while generating refresh and access token")
+  }
+}
+
 const registerUser = asyncHandler( async(req , res ) =>{
   // res.status(200).json({
   //   message : "ok"
@@ -105,4 +124,109 @@ const registerUser = asyncHandler( async(req , res ) =>{
    
 })
 
-export {registerUser}
+const loginUser = asyncHandler(async(req , res) =>{
+  /*
+   1. req body --> data 
+   2. username or email
+   3. find the user
+   4. password check 
+   5. access and refresh token
+   6. send cookie 
+   */
+
+   //   TAKING USERNAME OR EMAIL ID TO LOGINE FROM DB
+   const { username , email , password } = req.body
+   //console.log(email);
+
+   // CHECKING FOR THE ID 
+    if( !username && !email)  {
+        throw new ApiError(400 , "username or email is required ")
+    }
+
+    /* 
+      Here is an alternative of above code based on logic discussed in video:
+     if (!(username || email)) {
+         throw new ApiError(400, "username or email is required")
+        } 
+    */
+
+    // ACCESSING ONE ID FOR LOGIN
+    const user = await User.findOne({
+      // db advnc operator to find any one id 
+      $or : [{username} , { email}]
+      
+    })
+    if(!user) {
+      throw new ApiError(404, "user does not exit")
+    }
+    //CHCKING PASSWORD IS CORRECT OR NOT
+    const isPasswordValid = await user.isPasswordCorrect(password)
+
+    if(!isPasswordValid){
+      throw new ApiError(401,"Invalid user credentials")
+    }
+
+    // NOW VERIFYING WITH THE ACCESS TOKEN AND REFRESH TOKEN TO LOGIN WITH THE PASSWORD by getting the id value
+
+    const {accessToken , refreshToken} = await generateAccessAndRefreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    // HERE COOKIES R USED , WE CAN MODIFY THE COOKIES IN THE SERVER ONLY 
+
+    const options = {
+      httpOnly : true , 
+      secure : true ,
+    }
+    return res
+    .status(200)
+    .cookie("accessToken" , accessToken , options)
+    .cookie("refreshToken" , refreshToken , options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user : loggedInUser , accessToken , refreshToken
+        },
+        "User logged In Successfully "
+      )
+    )
+
+})
+
+const logoutUser = asyncHandler (async(req , res ) =>{
+  /*
+    To logout , we have to 
+    0. Know the user id , to remove 
+    1. clear the cookies 
+    2. remove the acees token from the system 
+    To do that , we can inject middleware before clicking the logout button in frontend to get accessing of the token and the cookies . We can make one middleware of authentication of our  
+   */
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set :{
+        // THIS REMOVES THE FIELD FROM DOCUMENT
+        refreshToken : undefined  
+      }
+    },
+    {
+      new : true
+    }
+  )
+  // FOR COOKIES
+
+  const options = {
+    httpOnly : true,
+    secure : true
+  }
+  return res 
+  .status(200)
+  .clearCookie("accessToken" , options)
+  .clearCookie("refreshToken" , options)
+  .json(
+    new ApiResponse(200, {} , "User logged Out")
+  )
+})
+
+export {registerUser , loginUser , logoutUser}

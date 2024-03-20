@@ -7,7 +7,6 @@ class ApiError extends Error {
     errors = [],
     stack= ""
 
-    
   ){
     super(message)
     this.statusCode = statusCode
@@ -19,8 +18,13 @@ class ApiError extends Error {
     // stack is avialable or not , we use this to find where is the  error 
     
 
+
     if(stack){
       this.stack = stack
+
+    if(stack){
+      this.stack = stack
+
 
     if(stack){
       this.stack = stack
@@ -30,6 +34,7 @@ class ApiError extends Error {
     }
     
   }
+}
 }
 }
 

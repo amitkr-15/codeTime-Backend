@@ -29,7 +29,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler( async(req, res) => {
   // res.status(200).json({
   //   message : "ok"
   // })
@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
 */
   const { fullName, email, username, password } = req.body;
 
-  console.log("email :", email); // USE OF POSTMAN
+  //console.log("email :", email); // USE OF POSTMAN
   //console.log("password :" , password);
 
   // checking for required fields available or not
@@ -74,10 +74,13 @@ const registerUser = asyncHandler(async (req, res) => {
   // check image is available on localpath or not - we can use multer for the refrence , multer will provide the url of th file.
   // always print req.files
 
+  //console.log(req.files);
+
   const avatarLocalPath = req.files?.avatar[0]?.path;
   // const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
-  console.log(req.files);
+  console.log(avatarLocalPath, "avatar");
+
   // fixing for the empty coverimage , if user send
   let coverImageLocalPath;
   if (
@@ -89,7 +92,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar file is required");
+    throw new ApiError(400, "Avatar file is required in localpath");
   }
 
   // upload of image on cloudinary platform - it will take time . so use await
@@ -97,10 +100,11 @@ const registerUser = asyncHandler(async (req, res) => {
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
+  console.log(avatar);
   // checking on the cloudinary
 
   if (!avatar) {
-    throw new ApiError(400, "Avatar file is required ");
+    throw new ApiError(400, "Avatar file is required in cloudinary ");
   }
 
   // entry in DataBase - using User model
@@ -111,7 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
     coverImage: coverImage?.url || "", // not uploaded, " "
     password,
     email,
-    username: username.tolowerCae(),
+    username: username.toLowerCase(),
   });
 
   // checking if user is created or not - using DB(already add _id)

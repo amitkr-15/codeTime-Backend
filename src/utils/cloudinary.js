@@ -2,7 +2,7 @@ import {v2 as cloudinary} from 'cloudinary';
 
 import fs from "fs" ;
 
-import fs from "fs"
+
 
 // fs are use for filehandling . eg- write , read , upload ,delete
           
@@ -22,15 +22,18 @@ const uploadOnCloudinary = async (localFilePath) =>{
     const response = await cloudinary.uploader.upload(localFilePath , { resource_type : "auto"})
 
     //file has been uploaded successfully
-    cosnsole.log("file is uploaded on cloudinary", response.url);
+    console.log("file is uploaded on cloudinary", response.url);
     // for unlinking the file from the localpath
 
-   // fs.unlinkSync(localFilePath)
-    fs.unlinkSync(localFilePath)
-
+   fs.unlinkSync(localFilePath)
+   
+   // console.log(response)
     return response ;
+
   } catch (error) {
     // remove the locally saved temporary file as the upload operation got failed 
+    //console.log("In cloudinary" , error)
+
     fs.unlinkSync(localFilePath) 
     return null ;
   }

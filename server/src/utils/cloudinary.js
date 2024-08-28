@@ -1,8 +1,11 @@
 import {v2 as cloudinary} from 'cloudinary';
 
 import fs from "fs" ;
+import { configDotenv } from "dotenv";
 
-
+configDotenv({
+  path: "./.env"
+})
 
 // fs are use for filehandling . eg- write , read , upload ,delete
           
@@ -40,7 +43,33 @@ const uploadOnCloudinary = async (localFilePath) =>{
 
 }
 
-export {uploadOnCloudinary}
+
+const deletefromcloudinary = async (public_id) => {
+  try {
+      const response = await cloudinary.uploader.destroy(public_id, { invalidate: true });
+      // console.log('Delete response:', response);
+      return response;
+  } catch (error) {
+      console.error('Error deleting from Cloudinary:', error);
+      throw error;
+  }
+};
+
+const videodeletefromcloudinary = async (public_id) => {
+  try {
+      const response = await cloudinary.uploader.destroy(public_id, { 
+          invalidate: true,
+          resource_type: "video" 
+      });
+      // console.log('Delete response:', response);
+      return response;
+  } catch (error) {
+      console.error('Error deleting from Cloudinary:', error);
+      throw error;
+  }
+};
+
+export {uploadOnCloudinary,deletefromcloudinary ,videodeletefromcloudinary}
 
 // cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
 // { public_id: "olympic_flag" }, 

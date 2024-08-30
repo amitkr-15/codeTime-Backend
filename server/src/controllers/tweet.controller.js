@@ -1,12 +1,13 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import {Tweet} from "../models/tweet.model.js"
-import {User} from "../models/user.model.js"
+
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { uploadOnCloudinary, deletefromcloudinary } from "../utils/cloudinary.js";
 import verifypostowner from "../utils/checkforpostowner.js";
 import { like } from "../models/like.model.js";
+import mongoose from "mongoose";
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet

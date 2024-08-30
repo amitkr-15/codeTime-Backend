@@ -11,6 +11,15 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref : "Video"
     },
+    commenton: {
+      type: String,
+      enum: ['Video', 'Tweet'],
+      required: true
+  },
+    postId: {
+      type: Schema.Types.ObjectId,
+      required: true
+  },
     owner : {
       type : Schema.Types.ObjectId,
       ref : "User"

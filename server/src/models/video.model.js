@@ -21,7 +21,7 @@ const videoSchema = new Schema(
       type : String,
       required : true
     },
-    duratin :{
+    duration :{
       type : Number,
       required :true 
     },
@@ -33,6 +33,9 @@ const videoSchema = new Schema(
       type: Boolean,
       default : true 
     },
+    tags: {
+      type: String
+  },
     owner : {
       type : Schema.Types.ObjectId,
       ref  : "User"
